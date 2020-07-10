@@ -83,12 +83,7 @@ export function WordsPerDay(config?: WordsPerDayConfig): WechatyPlugin {
                     await contact.say(imgFile);
                   }
                 } catch(e){
-                  console.log(e);
-                  // if (room) {
-                  //   await room.say("sorry,出现bug啦", contact);
-                  // } else {
-                  //   await contact.say("sorry,出现bug啦");
-                  // }
+                  console.log("error is " + e);
                 }
               }
             }); 
