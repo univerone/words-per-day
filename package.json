@@ -53,10 +53,5 @@
     "randomcolor": "^0.5.4",
     "wechaty": "^0.40.10",
     "wechaty-plugin-contrib": "^0.10.6"
-  },
-  "git": {
-    "scripts": {
-      "pre-push": "npx git-scripts-pre-push"
-    }
   }
 }
