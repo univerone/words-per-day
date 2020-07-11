@@ -1,5 +1,5 @@
 import { Wechaty, WechatyPlugin, Message, log, FileBox } from "wechaty";
-import { generateImg, getDay, downloadFile, img2base64 } from "./utils";
+import { generateImg, getDay, downloadFile, img2base64, getJsonData } from "./utils";
 
 export interface WordsPerDayConfigObject {
   /**
@@ -61,13 +61,17 @@ export function WordsPerDay(config?: WordsPerDayConfig): WechatyPlugin {
 
       if (text === normalizedConfig.trigger) {
         let name: string = contact.payload.name;
+        let date: string = getDay(); //当前日期
         let path: string =
-          "img/" + normalizedConfig.type + "-" + name + "-" + getDay() + ".jpg";
+          "img/" + normalizedConfig.type + "-" + name + "-" + date + ".jpg";
         let avatarPath: string = "img/" + name + ".jpg";
         await downloadFile(contact.payload.avatar, avatarPath);
         switch (normalizedConfig.type) {
           case "English":
-            await generateImg(path, avatarPath, name).catch((err) => {
+            let words: string[] = await getJsonData('http://open.iciba.com/dsapi/',
+            ['content','note']
+            )
+            await generateImg(path, avatarPath, name, date, words).catch((err) => {
               console.error(err);
             });
             const imgFile = FileBox.fromBase64(
