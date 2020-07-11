@@ -1,6 +1,7 @@
 # idea
 .idea
 .vscode
+package-lock.json
 img
 WordsPerDay-bot.memory-card.json
 # Logs

@@ -1,5 +1,5 @@
 import { Wechaty, WechatyPlugin, Message, log, FileBox } from "wechaty";
-import {generateImg, getDay, downloadFile } from "./utils";
+import { generateImg, getDay, downloadFile, img2base64 } from "./utils";
 
 export interface WordsPerDayConfigObject {
   /**
@@ -29,7 +29,6 @@ const DEFAULT_CONFIG: WordsPerDayConfigObject = {
   trigger: "打卡",
 };
 
-
 export function WordsPerDay(config?: WordsPerDayConfig): WechatyPlugin {
   log.verbose(
     "WechatyPluginContrib",
@@ -50,7 +49,7 @@ export function WordsPerDay(config?: WordsPerDayConfig): WechatyPlugin {
 
     wechaty.on("message", async (message) => {
       // 监听文字消息
-      log.info(message.toString())
+      log.info(message.toString());
       const contact: any = message.from();
       if (message.type() !== Message.Type.Text) {
         log.info("not Text");
@@ -58,38 +57,30 @@ export function WordsPerDay(config?: WordsPerDayConfig): WechatyPlugin {
       }
 
       const room = message.room();
-      const text = room
-        ? await message.mentionText()
-        : message.text()
+      const text = room ? await message.mentionText() : message.text();
 
       if (text === normalizedConfig.trigger) {
         let name: string = contact.payload.name;
-        let path: string = 'img/' + normalizedConfig.type+'-'+name+'-'+getDay() +'.jpg'
-        let avatarPath: string = 'img/' + name + '.jpg'
-        await downloadFile(contact.payload.avatar,avatarPath).then(
-          (value) => {
-            console.log(value);
-          }
-        );
-        switch(normalizedConfig.type){
-          case "English":            
-            generateImg(path,avatarPath,name, async(sendImg: string) => {
-              if (sendImg.length > 0 ) {
-                try{
-                  const imgFile = FileBox.fromFile(sendImg);
-                  if (room) {
-                    await room.say(imgFile);
-                  } else {
-                    await contact.say(imgFile);
-                  }
-                } catch(e){
-                  console.log("error is " + e);
-                }
-              }
-            }); 
-            break; /* 可选的 */
+        let path: string =
+          "img/" + normalizedConfig.type + "-" + name + "-" + getDay() + ".jpg";
+        let avatarPath: string = "img/" + name + ".jpg";
+        await downloadFile(contact.payload.avatar, avatarPath);
+        switch (normalizedConfig.type) {
+          case "English":
+            await generateImg(path, avatarPath, name).catch((err) => {
+              console.error(err);
+            });
+            const imgFile = FileBox.fromBase64(
+              img2base64(path),
+              (name = "test.png")
+            );
+            if (room) {
+              await room.say(imgFile);
+            } else {
+              await contact.say(imgFile);
+            }
+            break;
         }
-        
       }
     });
   };
