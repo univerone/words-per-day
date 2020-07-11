@@ -1,6 +1,5 @@
 import fs from "fs";
 import axios from "axios";
-const randomColor = require("randomcolor");
 const gm = require("gm").subClass({ imageMagick: true });
 
 // 根据url和参数制定爬取内容
@@ -46,7 +45,30 @@ export async function downloadFile(url: string, localPath: string) {
 // 生成互补随机颜色
 function generateColors(): [string, string] {
   let colors: [string, string] = ["", ""];
-  colors[0] = randomColor({ hue: "random", luminosity: "random" });
+  let colorMap: string[] = [
+    "#7d2828",
+    "#683671",
+    "#584480",
+    "#464678",
+    "#384c70",
+    "#23556f",
+    "#2d6a6c",
+    "#166856",
+    "#20452a",
+    "#645f46",
+    "#7d644a",
+    "#865846",
+    "#76443c",
+    "#6c3636",
+    "#491616",
+    "#123908",
+    "#192053",
+    "#3e318c",
+    "#20554f",
+    "#8a5837",
+    "#516451",
+  ];
+  colors[0] = colorMap[Math.floor(Math.random() * colorMap.length)];
   console.log(" color is ", colors[0]);
   colors[1] =
     "#" +
@@ -68,17 +90,26 @@ export async function generateImg(
   //   oriPath: string,
   savePath: string,
   avatarPath: string,
-  userName: string
+  userName: string,
+  date: string,
+  words: string[]
 ) {
   let colors: [string, string] = generateColors();
   gm("img/front.png")
     .background(colors[0]) // 背景颜色
     .mosaic() // 合成图层
-    .draw(`image over 500,800 200,200 "${avatarPath}" `)
-    .fontSize(68) // 字体大小
+    .draw(`image over 455,732 114,114 "${avatarPath}" `) // 绘制头像
+    .fontSize(48) // 字体大小
     .font("font/经典隶变简.ttf") // 字体
-    .fill(colors[1]) // 字体颜色
+    .fill("#ffffff") // 字体颜色
     .drawText(0, 400, userName, "Center") // 添加用户名
+    .fontSize(26)
+    .drawText(840, 105, date.slice(0, 4)+' '+date.slice(4, 6) + "/" + date.slice(6, 8)) //年份
+    .drawText(855, 155, getWeekDays()) // 月和日
+    .fontSize(48)
+    .drawText(108, 494, words[1].replace('，','，\n')) // 中文
+    .font("Maecenas-ExtraLight.ttf")
+    .drawText(108, 340, splitLines(words[0], 8)) // 英文
     .quality(100) // 质量最高
     .write(savePath, (err: any) => {
       if (err) {
@@ -90,11 +121,26 @@ export async function generateImg(
 }
 
 // 获取当前日期
-export function getDay() {
+export function getDay(): string {
   let date = new Date();
   let y = date.getFullYear();
   let m = date.getMonth() + 1;
   let d = date.getDate();
+  let M: string = m > 9 ? String(m) : "0" + String(m);
+  let D: string = d > 9 ? String(d) : "0" + String(d);
+  return `${y}${M}${D}`;
+}
 
-  return `${y}${m}${d}`;
+//获取当前星期
+function getWeekDays():string {
+  let date = new Date();
+  let weekMap = ['星期天', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+  return weekMap[date.getDay()]
+}
+
+//自动换行
+function splitLines(sentence: string, num: number): string{
+  var pattern = new RegExp(`((?:(?:\\S+\\s){${num}})|(?:.+)(?=\\n|$))`,'g');
+  var result = sentence.match(pattern)
+  return result ? result.join('\n') : ''
 }
