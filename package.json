@@ -1,5 +1,5 @@
 {
-  "name": "DailyPlugin",
+  "name": "WordsPerDay",
   "version": "1.0.0",
   "description": "wechaty每日一句插件",
   "main": "dist/src/index.js",
@@ -11,7 +11,7 @@
     "lint": "npm run lint:es && npm run lint:ts && npm run lint:md",
     "lint:md": "markdownlint README.md",
     "lint:ts": "tsc --noEmit",
-    "example": "ts-node examples/ding-dong-bot.ts",
+    "example": "ts-node src/ding-dong-bot.ts",
     "start": "npm run example",
     "test": "npm run lint && npm run test:unit",
     "test:pack": "bash -x scripts/npm-pack-testing.sh",
@@ -20,21 +20,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/univerone/DailyPlugin.git"
+    "url": "git+https://github.com/univerone/WordsPerDay.git"
   },
   "keywords": [],
   "author": "univerone",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/univerone/DailyPlugin/issues"
+    "url": "https://github.com/univerone/WordsPerDay/issues"
   },
-  "homepage": "https://github.com/univerone/DailyPlugin#readme",
+  "homepage": "https://github.com/univerone/WordsPerDay#readme",
   "devDependencies": {
     "@chatie/eslint-config": "^0.8.1",
     "@chatie/git-scripts": "^0.6.2",
     "@chatie/semver": "^0.4.7",
     "@chatie/tsconfig": "^0.10.1",
     "@types/request": "^2.48.5",
+    "@typescript-eslint/eslint-plugin": "^3.6.0",
+    "eslint": "^7.4.0",
     "shx": "^0.3.2",
     "tstest": "^0.4.10",
     "typescript": "^3.9.6",
@@ -42,11 +44,6 @@
     "wechaty-puppet-hostie": "^0.8.8",
     "wechaty-puppet-padplus": "^0.7.21",
     "wechaty-puppet-puppeteer": "^0.23.1"
-  },
-  "git": {
-    "scripts": {
-      "pre-push": "npx git-scripts-pre-push"
-    }
   },
   "dependencies": {
     "axios": "^0.19.2",
@@ -56,5 +53,10 @@
     "randomcolor": "^0.5.4",
     "wechaty": "^0.40.10",
     "wechaty-plugin-contrib": "^0.10.6"
+  },
+  "git": {
+    "scripts": {
+      "pre-push": "npx git-scripts-pre-push"
+    }
   }
 }
