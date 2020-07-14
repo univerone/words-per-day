@@ -3,7 +3,7 @@ import { getJsonData, generateImg, getDay } from "./utils";
 async  function main(){
     const text = await getJsonData('http://open.iciba.com/dsapi/',
     ['content','note']);
-    await generateImg("img/test.jpg","img/听妈妈的话.jpg","听妈妈的话",getDay(),text )
+    await generateImg("image/front.jpg","img/test.jpg","img/听妈妈的话.jpg","听妈妈的话",getDay(),text )
   }
   
   
