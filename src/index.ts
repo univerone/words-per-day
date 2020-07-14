@@ -76,8 +76,8 @@ export function WordsPerDay(config?: WordsPerDayConfig): WechatyPlugin {
       if (text === normalizedConfig.trigger) {
         let name: string = contact.payload.name;
         let date: string = getDay(); //当前日期
-        let path: string =
-          "img/" + normalizedConfig.type + "-" + name + "-" + date + ".jpg";
+        let path: string = "img/" + normalizedConfig.type + ".jpg";
+
         let avatarPath: string = "img/" + name + ".jpg";
         await downloadFile(contact.payload.avatar, avatarPath);
         switch (normalizedConfig.type) {
@@ -86,16 +86,15 @@ export function WordsPerDay(config?: WordsPerDayConfig): WechatyPlugin {
               "http://open.iciba.com/dsapi/",
               ["content", "note"]
             );
-            await generateImg(
+            let state: any = await generateImg(
               "image/front.png",
               path,
               avatarPath,
               name,
               date,
               words
-            ).catch((err) => {
-              console.error(err);
-            });
+            );
+            console.log(state);
             const imgFile = FileBox.fromBase64(
               img2base64(path),
               (name = "test.png")
@@ -126,7 +125,9 @@ export function WordsPerDay(config?: WordsPerDayConfig): WechatyPlugin {
           ); //获取每日一句
           if (room) {
             try {
-              await room.say(`当前时间为${getDay()}\n 今日信息为  ${words.join("\n")}`); // 发送消息
+              await room.say(
+                `当前时间为${getDay()}\n 今日信息为  ${words.join("\n")}`
+              ); // 发送消息
             } catch (e) {
               console.log(e.message);
             }

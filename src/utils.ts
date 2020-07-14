@@ -96,34 +96,36 @@ export async function generateImg(
   words: string[]
 ) {
   let colors: [string, string] = generateColors();
-  im(oriPath)
-    .background(colors[0]) // 背景颜色
-    .mosaic() // 合成图层
-    .draw(`image over 455,732 114,114 "${avatarPath}" `) // 绘制头像
-    .fill("#ffffff") // 字体颜色
-    .font("font/经典隶变简.ttf") // 字体    .font("font/经典隶变简.ttf") // 字体
-    .fontSize(40)
-    .drawText(108, 494, splitChar(words[1], 10)) // 中文
-    .fontSize(28) // 字体大小
-    .drawText(0, 390, userName, "Center") // 添加用户名
-    .fontSize(26) // 字体大小
-    .drawText(860, 155, getWeekDays()) // 星期
-    .font("font/Maecenas-ExtraLight.ttf")
-    .drawText(
-      850,
-      105,
-      date.slice(0, 4) + " " + date.slice(4, 6) + "/" + date.slice(6, 8)
-    ) //年份
-    .fontSize(40)
-    .drawText(108, 340, splitWords(words[0], 8)) // 英文
-    .quality(100) // 质量最高
-    .write(savePath, (err: any) => {
-      if (err) {
-        Promise.reject(err);
-      } else {
-        Promise.resolve();
-      }
-    });
+  return new Promise((resolve: any, reject: any) => {
+    im(oriPath)
+      .background(colors[0]) // 背景颜色
+      .mosaic() // 合成图层
+      .draw(`image over 455,732 114,114 "${avatarPath}" `) // 绘制头像
+      .fill("#ffffff") // 字体颜色
+      .font("font/经典隶变简.ttf") // 字体    .font("font/经典隶变简.ttf") // 字体
+      .fontSize(40)
+      .drawText(108, 494, splitChar(words[1], 10)) // 中文
+      .fontSize(28) // 字体大小
+      .drawText(0, 390, userName, "Center") // 添加用户名
+      .fontSize(26) // 字体大小
+      .drawText(860, 155, getWeekDays()) // 星期
+      .font("font/Maecenas-ExtraLight.ttf")
+      .drawText(
+        850,
+        105,
+        date.slice(0, 4) + " " + date.slice(4, 6) + "/" + date.slice(6, 8)
+      ) //年份
+      .fontSize(40)
+      .drawText(108, 340, splitWords(words[0], 8)) // 英文
+      .quality(100) // 质量最高
+      .write(savePath, (err: any) => {
+        if (err) {
+          reject;
+        } else {
+          resolve("success");
+        }
+      });
+  });
 }
 
 // 获取当前日期
