@@ -10,6 +10,7 @@ const config: WordsPerDayConfig = {
   type: "English",
   roomName: "不打卡就给钱",
   trigger: "打卡",
+  sendTime : "12:40"
 };
 
 bot.use(WordsPerDay(config));
@@ -21,7 +22,7 @@ async function onMessage (msg: Message) {
   }
 }
 bot
-  .on('login', (user) => log.info('Bot', `${user.name()} logined`))
+  // .on('login', (user) => log.info('Bot', `${user.name()} logined`))
   .on('logout', (user) => log.info('Bot', `${user.name()} logouted`))
   .on('error', (e) => log.info('Bot', 'error: %s', e))
   .on('scan', (qrcode, status) => {
