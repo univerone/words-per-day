@@ -1,24 +1,58 @@
 import fs from "fs";
 import axios from "axios";
 import gm from "gm";
+import { FONT_DIR } from "./config";
+import { JSONPath } from "jsonpath-plus";
+import cheerio from "cheerio";
 const im = gm.subClass({ imageMagick: true });
 
-// 根据url和参数制定爬取内容
+// 根据url和路径制定爬取json内容
 export async function getJsonData(url: string, params: string[]) {
   let result: string[] = [];
   let response: any = await axios.get(url);
   if (response.status === 200) {
+    let data = response.data;
+    // console.log(data);
     params.forEach((key) => {
-      let data = response.data;
-      if (key in data) {
-        if (data[key] instanceof Array) {
-          data[key] = data[key][0]; // 返回第一个匹配的
-        }
-        result.push(data[key]);
+      let ret = JSONPath({ path: key, json: data });
+      // console.log(`key is ${key}  and result is ${ret}`);
+      if (ret.length) {
+        result.push(ret[0]);
       }
     });
   }
   return result;
+}
+
+// 根据url和css选择器爬取html内容
+export async function getHTMLData(url: string, params: string[]) {
+  let result: string[] = [];
+  let response: any = await axios.get(url);
+  if (response.status === 200) {
+    const $ = cheerio.load(response.data);
+    params.forEach((key) => {
+      let ret = $(key).text();
+      if (ret.length) {
+        result.push(ret);
+      }
+    });
+  }
+  return result;
+}
+//根据正则表达式
+export async function getREData(url: string, params: string[]) {
+  let result: string[] = [];
+  let response: any = await axios.get(url);
+  if (response.status === 200) {
+    let data = response.data;
+    params.forEach((key) => {
+      let pattern = new RegExp(key, "g");
+      let ret = data.match(pattern);
+      if (ret.length) {
+        result.push(ret);
+      }
+    });
+  }
 }
 
 // 下载文件到本地
@@ -102,21 +136,21 @@ export async function generateImg(
       .mosaic() // 合成图层
       .draw(`image over 455,732 114,114 "${avatarPath}" `) // 绘制头像
       .fill("#ffffff") // 字体颜色
-      .font("font/经典隶变简.ttf") // 字体    .font("font/经典隶变简.ttf") // 字体
+      .font(`${FONT_DIR}/经典隶变简.ttf`) // 字体    .font("font/经典隶变简.ttf") // 字体
       .fontSize(40)
-      .drawText(108, 494, splitChar(words[1], 10)) // 中文
+      .drawText(128, 550, splitChar(words[1], 15)) // 中文
       .fontSize(28) // 字体大小
       .drawText(0, 390, userName, "Center") // 添加用户名
       .fontSize(26) // 字体大小
       .drawText(860, 155, getWeekDays()) // 星期
-      .font("font/Maecenas-ExtraLight.ttf")
+      .font(`${FONT_DIR}/Maecenas-ExtraLight.ttf`)
       .drawText(
         850,
         105,
-        date.slice(0, 4) + " " + date.slice(4, 6) + "/" + date.slice(6, 8)
+        `${date.slice(0, 4)} ${date.slice(4, 6)}/${date.slice(6, 8)}`
       ) //年份
       .fontSize(40)
-      .drawText(108, 340, splitWords(words[0], 8)) // 英文
+      .drawText(128, 430, splitWords(words[0], 10)) // 英文
       .quality(100) // 质量最高
       .write(savePath, (err: any) => {
         if (err) {
@@ -163,15 +197,11 @@ function splitWords(sentence: string, num: number): string {
 
 //中文自动换行，指定换行的文字个数, 如果有逗号的话直接分割
 function splitChar(str: string, len: number): string {
-  if (str.includes("，")) {
-    return str.replace("，", "，\n");
-  } else {
-    var ret = [];
-    for (var offset = 0, strLen = str.length; offset < strLen; offset += len) {
-      ret.push(str.slice(offset, len + offset));
-    }
-    return ret ? ret.join("\n") : "";
+  var ret = [];
+  for (var offset = 0, strLen = str.length; offset < strLen; offset += len) {
+    ret.push(str.slice(offset, len + offset));
   }
+  return ret ? ret.join("\n") : "";
 }
 
 // 时间字符串转换为cron格式
