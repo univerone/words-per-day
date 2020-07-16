@@ -1,5 +1,6 @@
 import { Wechaty, WechatyPlugin, Message, log, FileBox } from "wechaty";
 import schedule from "node-schedule";
+import {IMAGE_DIR} from "./config";
 import {
   generateImg,
   getDay,
@@ -76,9 +77,9 @@ export function WordsPerDay(config?: WordsPerDayConfig): WechatyPlugin {
       if (text === normalizedConfig.trigger) {
         let name: string = contact.payload.name;
         let date: string = getDay(); //当前日期
-        let path: string = "img/" + normalizedConfig.type + ".jpg";
+        let path: string = `${IMAGE_DIR}/${normalizedConfig.type}.jpg`;
 
-        let avatarPath: string = "img/" + name + ".jpg";
+        let avatarPath: string = `${IMAGE_DIR}/${name}.jpg`;
         await downloadFile(contact.payload.avatar, avatarPath);
         switch (normalizedConfig.type) {
           case "English":
