@@ -1,9 +1,9 @@
+package-lock.json
+*.memory-card.json
 # idea
 .idea
 .vscode
-package-lock.json
 img
-WordsPerDay-bot.memory-card.json
 # Logs
 logs
 *.log

@@ -1,9 +1,8 @@
 
 const rules = {
-  'no-console': 'off',
 }
 
-export default {
+module.exports = {
   extends: '@chatie',
   rules,
 }

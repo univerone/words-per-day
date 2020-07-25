@@ -1,19 +1,19 @@
-import { Wechaty, log, Message } from "wechaty";
+import { Wechaty, log, Message } from 'wechaty'
 import { generate } from 'qrcode-terminal'
-import { WordsPerDay, WordsPerDayConfig } from "./index";
-
+import { WordsPerDay, WordsPerDayConfig } from './index'
+import { Theme } from './utils'
 const bot = new Wechaty({
-  name: "WordsPerDay-bot",
-});
+  name: 'WordsPerDay-bot',
+})
 
 const config: WordsPerDayConfig = {
-  type: "English",
-  roomName: "不打卡就给钱",
-  trigger: "打卡",
-  sendTime : "12:40"
-};
+  rooms: ['不打卡就给钱'],
+  sendTime : '13:02',
+  trigger: '打卡',
+  type: Theme.English,
+}
 
-bot.use(WordsPerDay(config));
+bot.use(WordsPerDay(config))
 
 async function onMessage (msg: Message) {
   log.info('StarterBot', msg.toString())
