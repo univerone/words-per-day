@@ -19,12 +19,12 @@ export enum Theme {
  * @param params jsonpath路径的列表
  */
 export async function getJsonData (url: string, params: string[]): Promise<string[]> {
-  let result: string[] = []
-  let response: any = await axios.get(url)
+  const result: string[] = []
+  const response: any = await axios.get(url)
   if (response.status === 200) {
-    let data = response.data
+    const data = response.data
     params.forEach(key => {
-      let ret = JSONPath({ json: data, path: key })
+      const ret = JSONPath({ json: data, path: key })
       if (ret.length) {
         result.push(ret[0])
       }
@@ -39,12 +39,12 @@ export async function getJsonData (url: string, params: string[]): Promise<strin
  * @param params css选择器的列表
  */
 export async function getHTMLData (url: string, params: string[]): Promise<string[]> {
-  let result: string[] = []
-  let response: any = await axios.get(url)
+  const result: string[] = []
+  const response: any = await axios.get(url)
   if (response.status === 200) {
     const $ = cheerio.load(response.data)
     params.forEach(key => {
-      let ret = $(key).text()
+      const ret = $(key).text()
       if (ret.length) {
         result.push(ret)
       }
@@ -59,13 +59,13 @@ export async function getHTMLData (url: string, params: string[]): Promise<strin
  * @param params 正则表达式的列表
  */
 export async function getREData (url: string, params: string[]): Promise<string[]> {
-  let result: string[] = []
-  let response: any = await axios.get(url)
+  const result: string[] = []
+  const response: any = await axios.get(url)
   if (response.status === 200) {
-    let data = response.data
+    const data = response.data
     params.forEach(key => {
-      let pattern = new RegExp(key, 'g')
-      let ret = data.match(pattern)
+      const pattern = new RegExp(key, 'g')
+      const ret = data.match(pattern)
       if (ret.length) {
         result.push(ret)
       }
@@ -86,7 +86,7 @@ export async function downloadFile (url: string, localPath: string) {
       responseType: 'stream',
       url,
     })
-    let writer = fs.createWriteStream(localPath)
+    const writer = fs.createWriteStream(localPath)
     response.data.pipe(writer)
     return new Promise((resolve: any, reject: any) => {
       writer.on('finish', resolve('success'))
@@ -99,8 +99,8 @@ export async function downloadFile (url: string, localPath: string) {
  * 生成一对互补随机颜色
  */
 function generateColors (): [string, string] {
-  let colors: [string, string] = ['', '']
-  let colorMap: string[] = [
+  const colors: [string, string] = ['', '']
+  const colorMap: string[] = [
     '#7d2828',
     '#683671',
     '#584480',
@@ -138,7 +138,7 @@ function generateColors (): [string, string] {
  * @param path 本地图片路径
  */
 export function img2base64 (path: string): string {
-  let buff = fs.readFileSync(path)
+  const buff = fs.readFileSync(path)
   return buff.toString('base64')
 }
 
@@ -153,13 +153,13 @@ export async function generateImg (
   avatarPath: string,
   userName: string
 ): Promise<string> {
-  let date: string = getDay() // 当前日期
-  let words: string[] = await getJsonData(
+  const date: string = getDay() // 当前日期
+  const words: string[] = await getJsonData(
     // 中英文每日一句
     'http://open.iciba.com/dsapi/',
     ['content', 'note']
   )
-  let colors: [string, string] = generateColors()
+  const colors: [string, string] = generateColors()
   return new Promise((resolve: any, reject: any) => {
     im('image/front.png')
       .background(colors[0]) // 背景颜色
@@ -167,20 +167,20 @@ export async function generateImg (
       .draw(`image over 455,732 114,114 "${avatarPath}" `) // 绘制头像
       .fill('#ffffff') // 字体颜色
       .font(`${FONT_DIR}/经典隶变简.ttf`) // 字体    .font("font/经典隶变简.ttf") // 字体
-      .fontSize(40)
-      .drawText(128, 550, splitChar(words[1], 15)) // 中文
-      .fontSize(28) // 字体大小
-      .drawText(0, 390, userName, 'Center') // 添加用户名
+      .fontSize(38)
+      .drawText(128, 550, splitChar(words[1], 20)) // 中文
       .fontSize(26) // 字体大小
-      .drawText(860, 155, getWeekDays()) // 星期
+      .drawText(0, 380, userName, 'Center') // 添加用户名
+      .fontSize(26) // 字体大小
+      .drawText(865, 160, getWeekDays()) // 星期
       .font(`${FONT_DIR}/Maecenas-ExtraLight.ttf`)
       .drawText(
-        850,
-        105,
-        `${date.slice(0, 4)} ${date.slice(4, 6)}/${date.slice(6, 8)}`
+        870,
+        110,
+        `${date.slice(4, 6)} / ${date.slice(6, 8)}`
       ) // 年份
-      .fontSize(40)
-      .drawText(128, 430, splitWords(words[0], 10)) // 英文
+      .fontSize(38)
+      .drawText(128, 420, splitWords(words[0], 10)) // 英文
       .quality(100) // 质量最高
       .write(savePath, (err: any) => {
         if (err) {
@@ -196,12 +196,12 @@ export async function generateImg (
  * 获取当前日期 示例样式为20200725
  */
 export function getDay (): string {
-  let date = new Date()
-  let y = date.getFullYear()
-  let m = date.getMonth() + 1
-  let d = date.getDate()
-  let M: string = m > 9 ? String(m) : '0' + String(m)
-  let D: string = d > 9 ? String(d) : '0' + String(d)
+  const date = new Date()
+  const y = date.getFullYear()
+  const m = date.getMonth() + 1
+  const d = date.getDate()
+  const M: string = m > 9 ? String(m) : '0' + String(m)
+  const D: string = d > 9 ? String(d) : '0' + String(d)
   return `${y}${M}${D}`
 }
 
@@ -209,8 +209,8 @@ export function getDay (): string {
  * 获取当前星期
  */
 function getWeekDays (): string {
-  let date = new Date()
-  let weekMap = [
+  const date = new Date()
+  const weekMap = [
     '星期天',
     '星期一',
     '星期二',
@@ -251,7 +251,7 @@ function splitChar (str: string, len: number): string {
  * @param str 时间字符串，格式示例：
  */
 export function date2cron (str: string): string {
-  let hour: string = str.split(':')[0]
-  let minutes: string = str.split(':')[1]
+  const hour: string = str.split(':')[0]
+  const minutes: string = str.split(':')[1]
   return `01 ${minutes} ${hour} * * *`
 }
