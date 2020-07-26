@@ -18,7 +18,7 @@ bot.start();
 
 ## 参数
 
-```bash
+```javascript
 const config = {
   rooms: ["打卡群"],// 作用每日一句的群名列表
   sendTime: "13:02",// 自动发送每日一句的时间
