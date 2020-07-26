@@ -1,6 +1,6 @@
+/* eslint-disable no-case-declarations */
 import { Wechaty, WechatyPlugin, Message, log, FileBox, Room } from 'wechaty'
 import schedule from 'node-schedule'
-import { IMAGE_DIR } from './config'
 import {
   generateImg,
   getDay,
@@ -35,6 +35,11 @@ export interface WordsPerDayConfigObject {
    * Default: None
    */
   sendTime: string;
+    /**
+   * 保存临时图片的文件夹
+   * Default: .
+   */
+  imgFolder: string;
 }
 
 /**
@@ -48,6 +53,7 @@ export type WordsPerDayConfig =
  * 默认的config
  */
 const DEFAULT_CONFIG: WordsPerDayConfigObject = {
+  imgFolder: '.',
   rooms: [],
   sendTime: '',
   trigger: '打卡',
@@ -96,13 +102,12 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
           if (text === normalizedConfig.trigger) {
             // 消息内容为触发词
             let name: string = contact.payload.name
-            let path: string = `${IMAGE_DIR}/${normalizedConfig.type}.jpg`
-
-            let avatarPath: string = `${IMAGE_DIR}/${name}.jpg`
+            const path: string = `${normalizedConfig.imgFolder}/${normalizedConfig.type}.jpg`
+            const avatarPath: string = `${normalizedConfig.imgFolder}/${name}.jpg`
             await downloadFile(contact.payload.avatar, avatarPath)
             switch (normalizedConfig.type) {
               case Theme.English:
-                let state: string = await generateImg(path, avatarPath, name)
+                const state: string = await generateImg(path, avatarPath, name)
                 log.info(state) // 图片生成状态
                 const imgFile = FileBox.fromBase64(
                   img2base64(path),
@@ -125,12 +130,12 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
         log.info(`${normalizedConfig.sendTime}`)
         schedule.scheduleJob(date2cron(normalizedConfig.sendTime), async () => {
           log.info('开始定时工作啦！')
-          let rooms = normalizedConfig.rooms.map(async (name) =>
+          const rooms = normalizedConfig.rooms.map(async (name) =>
             wechaty.Room.find({
               topic: name,
             })
           )
-          let words: string[] = await getJsonData(
+          const words: string[] = await getJsonData(
             'http://open.iciba.com/dsapi/',
             ['content', 'note']
           ) // 获取每日一句
