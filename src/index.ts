@@ -5,8 +5,7 @@ import {
   generateImg,
   getDay,
   downloadFile,
-  img2base64,
-  getJsonData,
+  getWords,
   date2cron,
   Theme,
 } from './utils'
@@ -15,11 +14,26 @@ import {
  * 定义ConfigObject类型
  */
 export interface WordsPerDayConfigObject {
+    /**
+   * 每日一句的名称
+   * Default: 每日一句
+   */
+  name: string;
   /**
-   * 每日一句的默认主题
-   * Default: Theme.English
+   * 每日一句的解析类型
+   * Default: Theme.JSON
    */
   type: Theme;
+  /**
+   * 每日一句的网址
+   * Default: 'https://apiv3.shanbay.com/weapps/dailyquote/quote/'
+   */
+  url: string;
+  /**
+   * 每日一句的选择器列表
+   * Default: '['content', 'translation']'
+   */
+  selectors: string[];
   /**
    * 应用的群聊的名称列表
    * Default: []
@@ -54,10 +68,14 @@ export type WordsPerDayConfig =
  */
 const DEFAULT_CONFIG: WordsPerDayConfigObject = {
   imgFolder: '.',
+  name: '每日一句',
   rooms: [],
+  selectors: ['content', 'translation'],
   sendTime: '',
   trigger: '打卡',
-  type: Theme.English,
+  type: Theme.JSON,
+  url: 'https://apiv3.shanbay.com/weapps/dailyquote/quote/',
+
 }
 
 /**
@@ -71,7 +89,7 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
     typeof config === 'undefined' ? '' : JSON.stringify(config)
   )
   // 补全配置
-  const normalizedConfig: WordsPerDayConfigObject = {
+  const conf: WordsPerDayConfigObject = {
     ...DEFAULT_CONFIG,
     ...config,
   }
@@ -94,27 +112,22 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
       }
 
       const room = message.room()
-      const text = message.text()
       if (room) {
         const topic = await room.topic()
-        if (normalizedConfig.rooms.includes(topic)) {
+        if (conf.rooms.includes(topic)) {
           // 消息在指定的群里面
-          if (text === normalizedConfig.trigger) {
-            // 消息内容为触发词
-            let name: string = contact.payload.name
-            const path: string = `${normalizedConfig.imgFolder}/${normalizedConfig.type}.jpg`
-            const avatarPath: string = `${normalizedConfig.imgFolder}/${name}.jpg`
-            await downloadFile(contact.payload.avatar, avatarPath)
-            switch (normalizedConfig.type) {
-              case Theme.English:
-                const state: string = await generateImg(path, avatarPath, name)
-                log.info(state) // 图片生成状态
-                const imgFile = FileBox.fromBase64(
-                  img2base64(path),
-                  (name = 'test.png')
-                )
-                await room.say(imgFile)
-                break
+          if (await message.mentionSelf()) { // 机器人被at
+            const text = await message.mentionText()
+            if (text === conf.trigger) {
+              const words: string[] = await getWords(conf.type, conf.url, conf.selectors)
+              await room.say(`当前时间为${getDay()}\n${conf.name}为\n${words.join('\n')}`)
+              // 消息内容为触发词
+              const name: string = contact.payload.name
+              const avatarPath: string = `${conf.imgFolder}/${name}.jpg`
+              await downloadFile(contact.payload.avatar, avatarPath)
+              const base64img: string = await generateImg(avatarPath, name)
+              const imgFile = FileBox.fromBase64(base64img, 'image.png')
+              await room.say(imgFile)
             }
           }
         }
@@ -126,19 +139,16 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
      */
     wechaty.on('login', (user) => {
       log.info('Bot', `${user.name()} logined`)
-      if (normalizedConfig.sendTime.length > 0) {
-        log.info(`${normalizedConfig.sendTime}`)
-        schedule.scheduleJob(date2cron(normalizedConfig.sendTime), async () => {
-          log.info('开始定时工作啦！')
-          const rooms = normalizedConfig.rooms.map(async (name) =>
+      if (conf.sendTime.length > 0) {
+        log.info(`${conf.sendTime}`)
+        schedule.scheduleJob(date2cron(conf.sendTime), async () => {
+          const rooms = conf.rooms.map(async (name) =>
             wechaty.Room.find({
               topic: name,
             })
           )
-          const words: string[] = await getJsonData(
-            'http://open.iciba.com/dsapi/',
-            ['content', 'note']
-          ) // 获取每日一句
+          const words: string[] = await getWords(conf.type, conf.url, conf.selectors)
+          // 获取每日一句
           rooms.forEach(async (room) => {
             if (room instanceof Room) {
               try {
