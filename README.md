@@ -83,7 +83,7 @@ const config = {
 ### 2. 根据关键词回复打卡图片
 
 每次生成的打卡图片颜色不同
-![screenshot5](docs/images/screenshot2.png)
+![screenshot4](docs/images/screenshot4.png)
 
 打卡图片的具体样式如下，显示打卡用户的头像和名字
-![screenshot6](docs/images/screenshot3.png)
+![screenshot5](docs/images/screenshot5.png)
