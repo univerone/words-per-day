@@ -8,7 +8,14 @@ import { log } from 'wechaty'
 const im = gm.subClass({ imageMagick: true })
 
 /**
- * 枚举支持的主题
+ * 用户自定义的解析函数
+ */
+export interface getWordsFunc {
+  (): Promise<string>;
+}
+
+/**
+ * 枚举支持的内置解析函数类型
  */
 export enum Theme {
   JSON,
@@ -110,7 +117,7 @@ export async function getREData (
  * @param url 内容来源的网址
  * @param selectors 选择器字符串的列表
  */
-export async function getWords (type: number, url: string, selectors: string[]): Promise<string[]> {
+export async function getWords (type: number, url: string, selectors: string[]): Promise<string> {
   let words: string[] = []
   switch (type) {
     case 0:
@@ -126,7 +133,7 @@ export async function getWords (type: number, url: string, selectors: string[]):
   if (!words.length) {
     log.error('Please make sure your config is correct')
   }
-  return words
+  return words.join('\n')
 }
 
 /**
