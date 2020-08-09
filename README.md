@@ -16,9 +16,15 @@ bot
 bot.start();
 ```
 
-## 2. 参数
+## 2. 自定义数据来源
 
-### 2.1 使用jsonpath选择器
+可以自定义获取数据来源的函数，函数的类型如下：
+
+```javascript
+export interface getWordsFunc {
+  (): Promise<string>;
+}
+```
 
 jsonpath的语法可参考：
 
@@ -26,53 +32,25 @@ jsonpath的语法可参考：
 * <https://jsonpath.com/>
 
 ```javascript
+async function getDailyEnglish(){
+    return getWords(
+        Theme.JSON,
+        'https://apiv3.shanbay.com/weapps/dailyquote/quote/',
+        ['content', 'translation']
+    );
+}
+
 const config = {
   rooms: ["打卡群"],// 作用每日一句的群名列表
   sendTime: "13:02",// 自动发送每日一句的时间
   trigger: "打卡",// 群内触发每日一句生成图片的关键词
   imageDir: 'image'//本地保存图片文件的路径
-  name: '历史上的今天'// 每日一句数据源的名称
-  type: Theme.JSON, // 每日一句数据源的类型，目前只支持Jsonpath，
-  url: 'https://news.topurl.cn/api', // 每日一句数据源的网址
-  selectors: ['$.data.historyList[*].event'], // 每日一句数据源的选择器列表，各个选择器的结果将使用换行符连接
+  name: '每日英语'// 每日一句数据源的名称
+  func: getDailyEnglish // 每日一句数据源的选择器列表，各个选择器的结果将使用换行符连接
 };
 ```
 
 ![screenshot1](docs/images/screenshot1.png)
-
-### 2.2 使用css选择器
-
-```javascript
-const config = {
-  rooms: ["打卡群"],// 作用每日一句的群名列表
-  sendTime: "13:02",// 自动发送每日一句的时间
-  trigger: "打卡",// 群内触发每日一句生成图片的关键词
-  imageDir: 'image'//本地保存图片文件的路径
-  type: Theme.HTML,
-  name: '每日新闻',
-  url: 'https://news.topurl.cn/',
-  selectors: ['.news-wrap > div.line > a']
-};
-```
-
-![screenshot2](docs/images/screenshot2.png)
-
-### 2.3 使用正则表达式
-
-```javascript
-const config = {
-  rooms: ["打卡群"],// 作用每日一句的群名列表
-  sendTime: "13:02",// 自动发送每日一句的时间
-  trigger: "打卡",// 群内触发每日一句生成图片的关键词
-  imageDir: 'image'//本地保存图片文件的路径
-  type: Theme.RE,
-  name: '未来三天全国天气预报',
-  url: 'http://www.weather.com.cn/index/zxqxgg1/new_wlstyb.shtml',
-  selectors: ['未来三天具体预报<\/p><p style="text-indent:2em;">(.*?)<\/p>']
-};
-```
-
-![screenshot3](docs/images/screenshot3.png)
 
 ## 3.效果截图
 

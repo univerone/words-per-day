@@ -5,9 +5,9 @@ import {
   generateImg,
   getDay,
   downloadFile,
-  getWords,
   date2cron,
-  Theme,
+  getWordsFunc,
+  getJsonData,
 } from './utils'
 
 /**
@@ -20,20 +20,13 @@ export interface WordsPerDayConfigObject {
    */
   name: string;
   /**
-   * 每日一句的解析类型
-   * Default: Theme.JSON
+   * 每日一句的解析函数
+   * Default: async () => getJsonData(
+   * 'https://apiv3.shanbay.com/weapps/dailyquote/quote/',
+   * ['content', 'translation']
+   * );
    */
-  type: Theme;
-  /**
-   * 每日一句的网址
-   * Default: 'https://apiv3.shanbay.com/weapps/dailyquote/quote/'
-   */
-  url: string;
-  /**
-   * 每日一句的选择器列表
-   * Default: '['content', 'translation']'
-   */
-  selectors: string[];
+  source: getWordsFunc;
   /**
    * 应用的群聊的名称列表
    * Default: []
@@ -70,12 +63,12 @@ const DEFAULT_CONFIG: WordsPerDayConfigObject = {
   imgFolder: '.',
   name: '每日一句',
   rooms: [],
-  selectors: ['content', 'translation'],
   sendTime: '',
+  source: async () =>  await getJsonData(
+    'https://apiv3.shanbay.com/weapps/dailyquote/quote/',
+    ['content', 'translation']
+  ),
   trigger: '打卡',
-  type: Theme.JSON,
-  url: 'https://apiv3.shanbay.com/weapps/dailyquote/quote/',
-
 }
 
 /**
@@ -119,8 +112,8 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
           if (await message.mentionSelf()) { // 机器人被at
             const text = await message.mentionText()
             if (text === conf.trigger) {
-              const words: string[] = await getWords(conf.type, conf.url, conf.selectors)
-              await room.say(`当前时间为${getDay()}\n${conf.name}为\n${words.join('\n')}`)
+              const words: string = await conf.source()
+              await room.say(`当前时间为${getDay()}\n${conf.name}为\n${words}`)
               // 消息内容为触发词
               const name: string = contact.payload.name
               const avatarPath: string = `${conf.imgFolder}/${name}.jpg`
@@ -147,13 +140,13 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
               topic: name,
             })
           )
-          const words: string[] = await getWords(conf.type, conf.url, conf.selectors)
+          const words: string = await conf.source()
           // 获取每日一句
           rooms.forEach(async (room) => {
             if (room instanceof Room) {
               try {
                 await room.say(
-                  `当前时间为${getDay()}\n今日信息为\n${words.join('\n')}`
+                  `当前时间为${getDay()}\n今日信息为\n${words}`
                 )
               } catch (e) {
                 log.info(e.message)
