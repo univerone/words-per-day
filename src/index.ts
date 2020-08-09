@@ -1,14 +1,15 @@
-/* eslint-disable no-case-declarations */
-import { Wechaty, WechatyPlugin, Message, log, FileBox, Room } from 'wechaty'
-import schedule from 'node-schedule'
 import {
+  Theme,
   generateImg,
   getDay,
   downloadFile,
   date2cron,
   getWordsFunc,
-  getJsonData,
+  getWords,
 } from './utils'
+/* eslint-disable no-case-declarations */
+import { Wechaty, WechatyPlugin, Message, log, FileBox, Room } from 'wechaty'
+import schedule from 'node-schedule'
 
 /**
  * 定义ConfigObject类型
@@ -64,7 +65,7 @@ const DEFAULT_CONFIG: WordsPerDayConfigObject = {
   name: '每日一句',
   rooms: [],
   sendTime: '',
-  source: async () =>  await getJsonData(
+  source: async () =>  await getWords(Theme.JSON,
     'https://apiv3.shanbay.com/weapps/dailyquote/quote/',
     ['content', 'translation']
   ),
