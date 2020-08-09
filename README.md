@@ -46,7 +46,7 @@ const config = {
   trigger: "打卡",// 群内触发每日一句生成图片的关键词
   imageDir: 'image'//本地保存图片文件的路径
   name: '每日英语'// 每日一句数据源的名称
-  func: getDailyEnglish // 每日一句数据源的选择器列表，各个选择器的结果将使用换行符连接
+  func: getDailyEnglish // 每日一句数据源的函数名
 };
 ```
 
