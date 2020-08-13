@@ -6,11 +6,14 @@ import {
   date2cron,
   getWordsFunc,
   getWords,
+  getREData,
+  onlineImg2ase64,
+  img2base64,
 } from './utils'
 /* eslint-disable no-case-declarations */
 import { Wechaty, WechatyPlugin, Message, log, FileBox, Room } from 'wechaty'
 import schedule from 'node-schedule'
-
+import fs from 'fs'
 /**
  * 定义ConfigObject类型
  */
@@ -34,10 +37,15 @@ export interface WordsPerDayConfigObject {
    */
   rooms: string[];
   /**
-   * 触发图片发送的关键词
+   * 触发发送的关键词
    * Default: '打卡'
    */
   trigger: string;
+  /**
+   * 是否生成打卡图片
+   * Default: true
+   */
+  makeImg: boolean;
   /**
    * 在群里定时发送的时间, 示例格式为 "8:20"
    * Default: None
@@ -62,6 +70,7 @@ export type WordsPerDayConfig =
  */
 const DEFAULT_CONFIG: WordsPerDayConfigObject = {
   imgFolder: '.',
+  makeImg: true,
   name: '每日一句',
   rooms: [],
   sendTime: '',
@@ -113,15 +122,30 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
           if (await message.mentionSelf()) { // 机器人被at
             const text = await message.mentionText()
             if (text === conf.trigger) {
-              const words: string = await conf.source()
+              let words: string = await conf.source()
+              const imgUrls: string[] = getREData(words, ['(http.+(png|jpeg)?)'])
+              words = words.replace(/\n(http.+(png|jpeg)?)/g, '')
               await room.say(`当前时间为${getDay()}\n${conf.name}为\n${words}`)
+              imgUrls.forEach(async (imgUrl) => {
+                await room.say(
+                  FileBox.fromBase64(
+                    await onlineImg2ase64(imgUrl.replace('\n', '')), 'image.png')
+                )
+              })
               // 消息内容为触发词
-              const name: string = contact.payload.name
-              const avatarPath: string = `${conf.imgFolder}/${name}.jpg`
-              await downloadFile(contact.payload.avatar, avatarPath)
-              const base64img: string = await generateImg(avatarPath, name)
-              const imgFile = FileBox.fromBase64(base64img, 'image.png')
-              await room.say(imgFile)
+              if (conf.makeImg) {
+                const name: string = contact.payload.name
+                const avatarPath: string = `${conf.imgFolder}/${name}.jpg`
+                await downloadFile(contact.payload.avatar, avatarPath)
+                await generateImg(avatarPath, name)
+                const imgFile = FileBox.fromBase64(img2base64(avatarPath), 'image.png')
+                await room.say(imgFile)
+                try {
+                  fs.unlinkSync(avatarPath)
+                } catch (error) {
+                  log.info(error)
+                }
+              }
             }
           }
         }
@@ -143,7 +167,7 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
           )
           const words: string = await conf.source()
           // 获取每日一句
-          rooms.forEach(async (room) => {
+          for (const room of rooms) {
             if (room instanceof Room) {
               try {
                 await room.say(
@@ -153,7 +177,7 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
                 log.info(e.message)
               }
             }
-          })
+          }
         })
       }
     })
