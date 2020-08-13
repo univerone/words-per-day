@@ -1,6 +1,6 @@
 {
   "name": "words-per-day",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "wechaty每日一句插件",
   "main": "dist/src/mod.js",
   "typings": "dist/src/mod.d.ts",
