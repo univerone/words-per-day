@@ -25,89 +25,65 @@ export enum Theme {
 
 /**
  * 根据jsonpath路径爬取json内容
- * @param url api接口的网址
+ * @param data 网站内容
  * @param params jsonpath路径的列表
  */
-export async function getJsonData (
-  url: string,
+export function getJsonData (
+  data: string,
   params: string[]
-): Promise<string[]> {
+): string[] {
   const result: string[] = []
-  try {
-    const response: any = await axios.get(url)
-    if (response.status === 200) {
-      const data = response.data
-      params.forEach((key) => {
-        const ret = JSONPath({ json: data, path: key })
-        if (ret.length) {
-          result.push(ret.join('\n')) // 返回列表则换行
-        }
-      })
+  params.forEach((key) => {
+    const ret = JSONPath({ json: data, path: key })
+    if (ret.length) {
+      result.push(ret.join('\n')) // 返回列表则换行
     }
-  } catch (error) {
-    log.error(error)
-  }
+  })
   return result
 }
 
 /**
  * 根据url和css选择器爬取html内容
- * @param url api接口的网址
+ * @param data 网站内容
  * @param params css选择器的列表
  */
-export async function getHTMLData (
-  url: string,
+export function getHTMLData (
+  data: string,
   params: string[]
-): Promise<string[]> {
+): string[] {
   const result: string[] = []
-  try {
-    const response: any = await axios.get(url)
-    if (response.status === 200) {
-      const $ = cheerio.load(response.data)
-      params.forEach((key) => {
-        const ret = $(key).map(function (_i, el) {
-          // this === el
-          return $(el).text()
-        }).get().join('\n')
-        if (ret.length) {
-          result.push(ret)
-        }
-      })
+  const $ = cheerio.load(data)
+  params.forEach((key) => {
+    const ret = $(key).map(function (_i, el) {
+      // this === el
+      return $(el).text()
+    }).get().join('\n')
+    if (ret.length) {
+      result.push(ret)
     }
-  } catch (error) {
-    log.error(error)
-  }
-
+  })
   return result
 }
 
 /**
  * 根据正则表达式选取html内容
- * @param url api接口的网址
+ * @param data
  * @param params 正则表达式的列表
  */
-export async function getREData (
-  url: string,
+export function getREData (
+  data: string,
   params: string[]
-): Promise<string[]> {
+): string[] {
   const result: string[] = []
-  try {
-    const response: any = await axios.get(url)
-    if (response.status === 200) {
-      const data = response.data
-      params.forEach((key) => {
-        const pattern = new RegExp(key, 'g')
-        const results = [...data.matchAll(pattern)]
-        if (results.length) {
-          results.forEach((ret) => {
-            result.push(ret.length > 1 ? ret.slice(1) : ret[0]) // 有group则提取group
-          })
-        }
+  params.forEach((key) => {
+    const pattern = new RegExp(key, 'g')
+    const results = [...data.matchAll(pattern)]
+    if (results.length) {
+      results.forEach((ret) => {
+        result.push(ret.length > 1 ? ret.slice(1).join('\n') : ret[0]) // 有group则提取group
       })
     }
-  } catch (error) {
-    log.error(error)
-  }
+  })
   return result
 }
 
@@ -119,16 +95,23 @@ export async function getREData (
  */
 export async function getWords (type: number, url: string, selectors: string[]): Promise<string> {
   let words: string[] = []
-  switch (type) {
-    case 0:
-      words = await getJsonData(url, selectors)
-      break
-    case 1:
-      words = await getHTMLData(url, selectors)
-      break
-    case 2:
-      words = await getREData(url, selectors)
-      break
+  try {
+    const response: any = await axios.get(url)
+    if (response.status === 200) {
+      switch (type) {
+        case 0:
+          words = getJsonData(response.data, selectors)
+          break
+        case 1:
+          words = getHTMLData(response.data, selectors)
+          break
+        case 2:
+          words = getREData(response.data, selectors)
+          break
+      }
+    }
+  } catch (error) {
+    log.error(error)
   }
   if (!words.length) {
     log.error('Please make sure your config is correct')
@@ -213,6 +196,18 @@ export function img2base64 (path: string): string {
 }
 
 /**
+ * 将在线图片文件转换为base64字符串
+ * @param url 图片地址
+ */
+export async function onlineImg2ase64 (url: string): Promise<string> {
+  const response = await axios
+    .get(url, {
+      responseType: 'arraybuffer',
+    })
+  return Buffer.from(response.data, 'binary').toString('base64')
+}
+
+/**
  * 根据头像、用户名、爬取的文字生成打卡图片，返回图片的base64字符串
  * @param avatarPath 头像图片的本地路径
  * @param userName 用户名
@@ -222,11 +217,7 @@ export async function generateImg (
   userName: string
 ): Promise<string> {
   const date: string = getDay() // 当前日期
-  const words: string[] = await getJsonData(
-    // 中英文每日一句
-    'https://apiv3.shanbay.com/weapps/dailyquote/quote/',
-    ['content', 'translation']
-  )
+  const words: string[] = (await getWords(Theme.JSON, 'https://apiv3.shanbay.com/weapps/dailyquote/quote/', ['content', 'translation'])).split('\n')
   const colors: [string, string] = generateColors()
   return new Promise((resolve: any, reject: any) => {
     im(`${IMAGE_DIR}/front.png`)
@@ -236,7 +227,7 @@ export async function generateImg (
       .fill('#ffffff') // 字体颜色
       .font(`${FONT_DIR}/经典隶变简.ttf`) // 字体
       .fontSize(38)
-      .drawText(128, 550, splitChar(words[1], 20)) // 中文
+      .drawText(128, 550, '\n' + splitChar(words[1], 20)) // 中文
       .fontSize(26) // 字体大小
       .drawText(0, 380, userName, 'Center') // 用户名
       .fontSize(26) // 字体大小
@@ -246,13 +237,19 @@ export async function generateImg (
       .fontSize(38)
       .drawText(128, 420, splitWords(words[0], 8)) // 英文
       .quality(100) // 质量最高
-      .toBuffer('png', function (err, buffer) {
+      .write(avatarPath, function (err) {
         if (err) {
           reject(err)
-        } else {
-          resolve(buffer.toString('base64'))
         }
+        resolve()
       })
+    // .toBuffer('png', function (err, buffer) {
+    //   if (err) {
+    //     reject(err)
+    //   } else {
+    //     resolve(buffer.toString('base64'))
+    //   }
+    // })
   })
 }
 
