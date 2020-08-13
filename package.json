@@ -1,6 +1,6 @@
 {
   "name": "words-per-day",
-  "version": "0.0.12",
+  "version": "0.0.10",
   "description": "wechaty每日一句插件",
   "main": "dist/src/mod.js",
   "typings": "dist/src/mod.d.ts",
@@ -55,10 +55,5 @@
     "qrcode-terminal": "^0.12.0",
     "wechaty": "^0.46.2",
     "wechaty-plugin-contrib": "^0.14.12"
-  },
-  "git": {
-    "scripts": {
-      "pre-push": "npx git-scripts-pre-push"
-    }
   }
 }
