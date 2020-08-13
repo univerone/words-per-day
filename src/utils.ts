@@ -1,7 +1,7 @@
 import fs from 'fs'
 import axios from 'axios'
 import gm from 'gm'
-import { FONT_DIR } from './config'
+import { FONT_DIR,IMAGE_DIR } from './config'
 import { JSONPath } from 'jsonpath-plus'
 import cheerio from 'cheerio'
 import { log } from 'wechaty'
@@ -229,7 +229,7 @@ export async function generateImg (
   )
   const colors: [string, string] = generateColors()
   return new Promise((resolve: any, reject: any) => {
-    im('image/front.png')
+    im(`${IMAGE_DIR}/front.png`)
       .background(colors[0]) // 背景颜色
       .mosaic() // 合成图层
       .draw(`image over 455,732 114,114 "${avatarPath}" `) // 绘制头像
@@ -244,7 +244,7 @@ export async function generateImg (
       .font(`${FONT_DIR}/Maecenas-ExtraLight.ttf`)
       .drawText(865, 100, `${date.slice(4, 6)} / ${date.slice(6, 8)}`) // 日期
       .fontSize(38)
-      .drawText(128, 420, splitWords(words[0], 10)) // 英文
+      .drawText(128, 420, splitWords(words[0], 8)) // 英文
       .quality(100) // 质量最高
       .toBuffer('png', function (err, buffer) {
         if (err) {
