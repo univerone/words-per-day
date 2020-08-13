@@ -1,7 +1,7 @@
 import fs from 'fs'
 import axios from 'axios'
 import gm from 'gm'
-import { FONT_DIR,IMAGE_DIR } from './config'
+import { FONT_DIR, IMAGE_DIR } from './config'
 import { JSONPath } from 'jsonpath-plus'
 import cheerio from 'cheerio'
 import { log } from 'wechaty'
