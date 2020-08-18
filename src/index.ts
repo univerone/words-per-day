@@ -1,7 +1,6 @@
 import {
   Theme,
   generateImg,
-  getDay,
   downloadFile,
   date2cron,
   getWordsFunc,
@@ -114,9 +113,9 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
         return
       }
 
-      const room = message.room()
+      const room = await message.room()
       if (room) {
-        const topic = await room.topic()
+        const topic: string  =  room.payload.topic
         if (conf.rooms.includes(topic)) {
           // 消息在指定的群里面
           if (await message.mentionSelf()) { // 机器人被at
@@ -125,13 +124,18 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
               let words: string = await conf.source()
               const imgUrls: string[] = getREData(words, ['(http.+(png|jpeg)?)'])
               words = words.replace(/\n(http.+(png|jpeg)?)/g, '')
-              await room.say(`当前时间为${getDay()}\n${conf.name}为\n${words}`)
-              imgUrls.forEach(async (imgUrl) => {
+              const chunks = words.match(/([^]{1,800})/g) // 大段文字分成800个的小段
+              if (chunks) {
+                for (const chunk of chunks) {
+                  await room.say(chunk)
+                }
+              }
+              for (const imgUrl of imgUrls) {
                 await room.say(
                   FileBox.fromBase64(
                     await onlineImg2ase64(imgUrl.replace('\n', '')), 'image.png')
                 )
-              })
+              }
               // 消息内容为触发词
               if (conf.makeImg) {
                 const name: string = contact.payload.name
@@ -155,27 +159,29 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
     /**
      * 定时发送信息
      */
-    wechaty.on('login', (user) => {
-      log.info('Bot', `${user.name()} logined`)
-      if (conf.sendTime.length > 0) {
+    wechaty.on('login', () => {
+      if (conf.sendTime) {
         log.info(`${conf.sendTime}`)
         schedule.scheduleJob(date2cron(conf.sendTime), async () => {
-          const rooms = conf.rooms.map(async (name) =>
-            wechaty.Room.find({
-              topic: name,
-            })
-          )
+          const rooms: Room[] = []
+          for (const name of conf.rooms) {
+            const rst = await wechaty.Room.find({ topic: name })
+            if (rst) {
+              rooms.push(rst)
+            }
+          }
           const words: string = await conf.source()
           // 获取每日一句
           for (const room of rooms) {
-            if (room instanceof Room) {
-              try {
-                await room.say(
-                  `当前时间为${getDay()}\n今日信息为\n${words}`
-                )
-              } catch (e) {
-                log.info(e.message)
+            try {
+              const chunks = words.match(/([^]{1,800})/g) // 大段文字分成800个的小段
+              if (chunks) {
+                for (const chunk of chunks) {
+                  await room.say(chunk)
+                }
               }
+            } catch (e) {
+              log.info(e.message)
             }
           }
         })

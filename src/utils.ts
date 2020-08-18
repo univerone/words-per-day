@@ -54,12 +54,14 @@ export function getHTMLData (
   const result: string[] = []
   const $ = cheerio.load(data)
   params.forEach((key) => {
-    const ret = $(key).map(function (_i, el) {
-      // this === el
-      return $(el).text()
-    }).get().join('\n')
+    const ret: string[] = []
+    $(key).each(function (_i, el) {
+      if ($(el).text()) {
+        ret.push($(el).text().trim())
+      }
+    })
     if (ret.length) {
-      result.push(ret)
+      result.push(ret.join('\n'))
     }
   })
   return result
@@ -99,13 +101,13 @@ export async function getWords (type: number, url: string, selectors: string[]):
     const response: any = await axios.get(url)
     if (response.status === 200) {
       switch (type) {
-        case 0:
+        case Theme.JSON:
           words = getJsonData(response.data, selectors)
           break
-        case 1:
+        case  Theme.HTML:
           words = getHTMLData(response.data, selectors)
           break
-        case 2:
+        case Theme.RE:
           words = getREData(response.data, selectors)
           break
       }
@@ -116,7 +118,7 @@ export async function getWords (type: number, url: string, selectors: string[]):
   if (!words.length) {
     log.error('Please make sure your config is correct')
   }
-  return words.join('\n')
+  return words.length >= 2 ? words.join('\n') : words[0]
 }
 
 /**
@@ -243,13 +245,6 @@ export async function generateImg (
         }
         resolve()
       })
-    // .toBuffer('png', function (err, buffer) {
-    //   if (err) {
-    //     reject(err)
-    //   } else {
-    //     resolve(buffer.toString('base64'))
-    //   }
-    // })
   })
 }
 
@@ -289,8 +284,8 @@ function getWeekDays (): string {
  * @param num 每行的单词个数
  */
 function splitWords (str: string, num: number): string {
-  var pattern = new RegExp(`((?:(?:\\S+\\s){${num}})|(?:.+)(?=\\n|$))`, 'g')
-  var result = str.match(pattern)
+  const pattern = new RegExp(`((?:(?:\\S+\\s){${num}})|(?:.+)(?=\\n|$))`, 'g')
+  const result = str.match(pattern)
   return result ? result.join('\n') : ''
 }
 
@@ -300,8 +295,8 @@ function splitWords (str: string, num: number): string {
  * @param len 每行的汉字个数
  */
 function splitChar (str: string, len: number): string {
-  var ret = []
-  for (var offset = 0, strLen = str.length; offset < strLen; offset += len) {
+  const ret: string[] = []
+  for (let offset = 0, strLen = str.length; offset < strLen; offset += len) {
     ret.push(str.slice(offset, len + offset))
   }
   return ret ? ret.join('\n') : ''
@@ -314,5 +309,5 @@ function splitChar (str: string, len: number): string {
 export function date2cron (str: string): string {
   const hour: string = str.split(':')[0]
   const minutes: string = str.split(':')[1]
-  return `01 ${minutes} ${hour} * * *`
+  return `0 ${minutes} ${hour} * * *`
 }
