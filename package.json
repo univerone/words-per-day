@@ -45,7 +45,7 @@
     "wechaty-puppet-mock": "^0.22.41"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.20.0",
     "cheerio": "^1.0.0-rc.3",
     "git-scripts": "^0.4.3",
     "gm": "^1.23.1",
