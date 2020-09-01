@@ -309,5 +309,5 @@ function splitChar (str: string, len: number): string {
 export function date2cron (str: string): string {
   const hour: string = str.split(':')[0]
   const minutes: string = str.split(':')[1]
-  return `0 ${minutes} ${hour} * * *`
+  return `00 ${minutes} ${hour} * * *`
 }
