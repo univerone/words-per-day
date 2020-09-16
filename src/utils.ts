@@ -307,7 +307,7 @@ function splitChar (str: string, len: number): string {
  * @param str 时间字符串，格式示例：
  */
 export function date2cron (str: string): string {
-  const hour: string = str.split(':')[0]
-  const minutes: string = str.split(':')[1]
-  return `00 ${minutes} ${hour} * * *`
+  const hour: Number = Number(str.split(':')[0])
+  const minutes: Number = Number(str.split(':')[1])
+  return `0 ${minutes} ${hour} * * *`
 }
