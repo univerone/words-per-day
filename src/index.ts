@@ -1,13 +1,12 @@
 import {
   Theme,
-  generateImg,
-  downloadFile,
   date2cron,
   getWordsFunc,
   getWords,
   getREData,
   onlineImg2ase64,
   img2base64,
+  generatePoster,
 } from './utils'
 /* eslint-disable no-case-declarations */
 import { Wechaty, WechatyPlugin, Message, log, FileBox, Room } from 'wechaty'
@@ -120,7 +119,10 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
           // 消息在指定的群里面
           if (await message.mentionSelf()) { // 机器人被at
             const text = await message.mentionText()
+            log.info(text)
+            log.info(conf.trigger)
             if (text === conf.trigger) {
+              log.info('right msg')
               let words: string = await conf.source()
               const imgUrls: string[] = getREData(words, ['(http.+(png|jpeg)?)'])
               words = words.replace(/\n(http.+(png|jpeg)?)/g, '')
@@ -140,8 +142,9 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
               if (conf.makeImg) {
                 const name: string = contact.payload.name
                 const avatarPath: string = `${conf.imgFolder}/${name}.jpg`
-                await downloadFile(contact.payload.avatar, avatarPath)
-                await generateImg(avatarPath, name)
+                // await downloadFile(contact.payload.avatar, avatarPath)
+                // await generateImg(avatarPath, name)
+                await generatePoster(avatarPath)
                 const imgFile = FileBox.fromBase64(img2base64(avatarPath), 'image.png')
                 await room.say(imgFile)
                 try {
