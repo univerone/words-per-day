@@ -1,6 +1,5 @@
 # Words per Day-wechaty 每日一句插件
 
-
 ![logo](docs/images/logo.png)
 
 ## 1. 安装使用
@@ -52,8 +51,6 @@ const config = {
 };
 ```
 
-
-
 ## 3.效果截图
 
 ### 1. 定时发送信息
@@ -78,6 +75,3 @@ const config = {
 
 打卡图片的具体样式如下
 ![screenshot5](docs/images/screenshot5.png)
-
-
-
