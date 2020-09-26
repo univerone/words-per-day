@@ -7,6 +7,8 @@ import {
   onlineImg2ase64,
   img2base64,
   generatePoster,
+  generateImg,
+  downloadFile,
 } from './utils'
 /* eslint-disable no-case-declarations */
 import { Wechaty, WechatyPlugin, Message, log, FileBox, Room } from 'wechaty'
@@ -16,6 +18,11 @@ import fs from 'fs'
  * 定义ConfigObject类型
  */
 export interface WordsPerDayConfigObject {
+  /**
+   * 打卡图片的风格,0和1分别代表两种不同的风格
+   * Default: 0
+   */
+  imgStyle: number;
     /**
    * 每日一句的名称
    * Default: 每日一句
@@ -68,6 +75,7 @@ export type WordsPerDayConfig =
  */
 const DEFAULT_CONFIG: WordsPerDayConfigObject = {
   imgFolder: '.',
+  imgStyle: 0,
   makeImg: true,
   name: '每日一句',
   rooms: [],
@@ -142,9 +150,15 @@ export function WordsPerDay (config?: WordsPerDayConfig): WechatyPlugin {
               if (conf.makeImg) {
                 const name: string = contact.payload.name
                 const avatarPath: string = `${conf.imgFolder}/${name}.jpg`
-                // await downloadFile(contact.payload.avatar, avatarPath)
-                // await generateImg(avatarPath, name)
-                await generatePoster(avatarPath)
+                switch (conf.imgStyle) {
+                  case 0:
+                    await downloadFile(contact.payload.avatar, avatarPath)
+                    await generateImg(avatarPath, name)
+                    break
+                  case 1:
+                    await generatePoster(avatarPath)
+                    break
+                }
                 const imgFile = FileBox.fromBase64(img2base64(avatarPath), 'image.png')
                 await room.say(imgFile)
                 try {

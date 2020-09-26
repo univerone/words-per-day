@@ -1,6 +1,7 @@
-# DailyPlugin
+# Words per Day-wechaty 每日一句插件
 
-wechaty 每日一句插件
+
+![logo](docs/images/logo.png)
 
 ## 1. 安装使用
 
@@ -44,24 +45,39 @@ const config = {
   rooms: ["打卡群"],// 作用每日一句的群名列表
   sendTime: "13:02",// 自动发送每日一句的时间
   trigger: "打卡",// 群内触发每日一句生成图片的关键词
-  imageDir: 'image'//本地保存图片文件的路径
-  name: '每日英语'// 每日一句数据源的名称
+  imageDir: 'image',//本地保存图片文件的路径
+  imageStyle: 0, // 打卡图片的风格,只有0和1两种
+  name: '每日英语',// 每日一句数据源的名称
   func: getDailyEnglish // 每日一句数据源的函数名
 };
 ```
 
-![screenshot1](docs/images/screenshot1.png)
+
 
 ## 3.效果截图
 
 ### 1. 定时发送信息
 
-见上面
+![screenshot1](docs/images/screenshot1.png)
 
 ### 2. 根据关键词回复打卡图片
 
+打卡图片的生成
+
+#### 2.1 风格1
+
 每次生成的打卡图片颜色不同
-![screenshot4](docs/images/screenshot4.png)
+![screenshot2](docs/images/screenshot2.png)
 
 打卡图片的具体样式如下，显示打卡用户的头像和名字
+![screenshot3](docs/images/screenshot3.png)
+
+#### 2.2  风格2
+
+![screenshot4](docs/images/screenshot4.png)
+
+打卡图片的具体样式如下
 ![screenshot5](docs/images/screenshot5.png)
+
+
+
