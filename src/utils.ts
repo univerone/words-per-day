@@ -272,9 +272,9 @@ export async function generatePoster (savePath: string) {
     $('h2.title:nth-child(2)').text(words[1])
 
     const browser = await puppeteer.launch({
-      headless: true,
       args: ['--no-sandbox'],
       defaultViewport: { height: 540, width: 462 },
+      headless: true
     })
     const page = await browser.newPage()
     await page.setContent($.html())
