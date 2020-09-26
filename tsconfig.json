@@ -17,4 +17,5 @@
     "src/**/*.ts",
     "tests/**/*.spec.ts",
   ],
+  "esModuleInterop": true,
 }
