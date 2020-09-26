@@ -274,7 +274,7 @@ export async function generatePoster (savePath: string) {
     const browser = await puppeteer.launch({
       args: ['--no-sandbox'],
       defaultViewport: { height: 540, width: 462 },
-      headless: true
+      headless: true,
     })
     const page = await browser.newPage()
     await page.setContent($.html())
