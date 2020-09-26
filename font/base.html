@@ -1,6 +1,6 @@
 <head>
   <meta charset="UTF-8">
-  <title>Daily Quotes</title> 
+  <title>Daily Quotes</title>
   <style>
   @font-face {
       font-family: 'caveatregular';
@@ -10,12 +10,14 @@
       font-style: normal;
   }
 
-  body {
-    background-image: -webkit-gradient(linear, left top, right top, from(#034378), to(#2d4e68));
-    background-image: linear-gradient(to right, #034378, #2d4e68);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
+  @font-face {
+    font-family: '经典隶变简';
+    src: url('Regular.woff2') format('woff2'),
+        url('Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
   a {
     text-decoration: none;
   }
@@ -46,7 +48,7 @@
     top: 0;
     font-size: 10px;
     font-weight: 700;
-    font-family: 'Open Sans';
+    font-family: 'Open Sans',serif;
     -webkit-transform: translate(-50%, 0);
             transform: translate(-50%, 0);
   }
@@ -70,7 +72,6 @@
     -webkit-transition: -webkit-transform 0.3s;
     transition: -webkit-transform 0.3s;
     transition: transform 0.3s;
-    transition: transform 0.3s, -webkit-transform 0.3s;
   }
   .card .data .content {
     padding: 1em;
@@ -95,9 +96,9 @@
             transform: translateY(-60px);
   }
 
-  .example-1 .wrapper {
-    background: url(https://images.unsplash.com/photo-1496979551903-46e46589a88b?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=cda12b505afa1beb06e49d89014cbd65&auto=format&fit=crop&w=634&q=80) 20% 1%/cover no-repeat;
-  }
+  /*.example-1 .wrapper {*/
+  /*  background: url(https://images.unsplash.com/photo-1496979551903-46e46589a88b?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=cda12b505afa1beb06e49d89014cbd65&auto=format&fit=crop&w=634&q=80) 20% 1%/cover no-repeat;*/
+  /*}*/
   .example-1 .date {
     position: absolute;
     top: 0;
@@ -136,6 +137,14 @@
     box-shadow: 0 5px 30px 10px rgba(0, 0, 0, 0.3);
     color: #fff;
   }
+
+  .chinese {
+    font-family: "经典隶变简", sans-serif;
+  }
+
+  .english{
+    font-family: "caveatregular", sans-serif;
+  }
   </style>
 
 
@@ -156,10 +165,10 @@
       </div>
       <div class="data">
         <div class="content">
-          <h2 class="title">
+          <h2 class="title english">
             Calm, brave, discerning, not selfish.
           </h2>
-          <h2 class="title">
+          <h2 class="title chinese">
             沉着、勇猛，有辨别，不自私。
           </h2>
         </div>

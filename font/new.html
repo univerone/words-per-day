@@ -1,0 +1,177 @@
+<html><head>
+  <meta charset="UTF-8">
+  <title>Daily Quotes</title>
+  <style>
+  @font-face {
+      font-family: 'caveatregular';
+      src: url('/home/sherry/project/github/words-per-day/font/caveat-regular-webfont.woff2') format('woff2'),
+          url('caveat-regular-webfont.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+  }
+
+  @font-face {
+    font-family: '经典隶变简';
+    src: url('/home/sherry/project/github/words-per-day/font/Regular.woff2') format('woff2'),
+        url('Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+  a {
+    text-decoration: none;
+  }
+  .card {
+    width: 100%;
+  }
+  .card .menu-content {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+  .card .menu-content::before, .card .menu-content::after {
+    content: '';
+    display: table;
+  }
+  .card .menu-content::after {
+    clear: both;
+  }
+  .card .menu-content li {
+    display: inline-block;
+  }
+  .card .menu-content a {
+    color: #fff;
+  }
+  .card .menu-content span {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'Open Sans',serif;
+    -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+  }
+  .card .wrapper {
+    background-color: #fff;
+    min-height: 540px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.2);
+  }
+  .card .wrapper .data {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+  }
+  .card .data {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    -webkit-transform: translateY(calc(70px + 1em));
+            transform: translateY(calc(70px + 1em));
+    -webkit-transition: -webkit-transform 0.3s;
+    transition: -webkit-transform 0.3s;
+    transition: transform 0.3s;
+  }
+  .card .data .content {
+    padding: 1em;
+    position: relative;
+    z-index: 1;
+  }
+  .card .author {
+    font-size: 12px;
+  }
+  .card .title {
+    margin-top: 10px;
+  }
+  .card .text {
+    height: 70px;
+    margin: 0;
+  }
+  .card input[type='checkbox'] {
+    display: none;
+  }
+  .card input[type='checkbox']:checked + .menu-content {
+    -webkit-transform: translateY(-60px);
+            transform: translateY(-60px);
+  }
+
+  /*.example-1 .wrapper {*/
+  /*  background: url(https://images.unsplash.com/photo-1496979551903-46e46589a88b?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=cda12b505afa1beb06e49d89014cbd65&auto=format&fit=crop&w=634&q=80) 20% 1%/cover no-repeat;*/
+  /*}*/
+  .example-1 .date {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #fff;
+    opacity: 0.7;
+    color: #000;
+    padding: 0.8em;
+  }
+  .example-1 .date span {
+    display: block;
+    text-align: center;
+  }
+  .example-1 .date .day {
+    font-family: "经典隶变简", sans-serif;
+    font-weight: 100;
+    font-size: 100px;
+    text-shadow: 2px 3px 2px rgba(0, 0, 0, 0.18);
+  }
+  .example-1 .date .month {
+    text-transform: uppercase;
+  }
+  .example-1 .date .month,
+  .example-1 .date .year{
+    font-family: "经典隶变简", sans-serif;
+    font-size: 40px;
+  }
+
+  .example-1 .date .greeting{
+    font-family: "caveatregular", sans-serif;
+    font-size: 40px;
+  }
+  .example-1 .content {
+    background-color: #000;
+    opacity: 0.7;
+    box-shadow: 0 5px 30px 10px rgba(0, 0, 0, 0.3);
+    color: #fff;
+  }
+
+  .chinese {
+    font-family: "经典隶变简", sans-serif;
+  }
+
+  .english{
+    font-family: "caveatregular", sans-serif;
+  }
+  </style>
+
+
+</head>
+
+<body translate="no">
+  <div class="row">
+  <div class="example-1 card">
+    <div class="wrapper" style="background : url(https://media-image1.baydn.com/soup_pub_image/bnznli/eedbae4f55736352fa0b233f977657d1.04af812e80ea43fee0ccd4ddc5d71e9f.jpeg) 20% 1%/cover no-repeat;">
+      <div class="date">
+        <span class="month">09</span>
+        <span class="day">26</span>
+        <hr>
+        <span class="year">&#x661F;&#x671F;&#x516D;</span>
+        <br>
+        <span class="greeting">Good</span>
+        <span class="greeting">Morning</span>
+      </div>
+      <div class="data">
+        <div class="content">
+          <h2 class="title english">The best day of your life is the one on which you decide your life is your own. </h2>
+          <h2 class="title chinese">&#x4F60;&#x751F;&#x547D;&#x4E2D;&#x6700;&#x7F8E;&#x597D;&#x7684;&#x4E00;&#x5929;&#xFF0C;&#x5C31;&#x662F;&#x4F60;&#x51B3;&#x5B9A;&#x8BA9;&#x4F60;&#x7684;&#x4EBA;&#x751F;&#x5C5E;&#x4E8E;&#x4F60;&#x81EA;&#x5DF1;&#x7684;&#x90A3;&#x4E00;&#x5929;&#x3002;</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body></html>

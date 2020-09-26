@@ -257,12 +257,17 @@ export async function generatePoster (savePath: string) {
   if (!fs.existsSync(savePath)) {
     const week: string = getWeekDays()
     const date: string = getDay()
-    const $ = cheerio.load(fs.readFileSync(`${FONT_DIR}/base.html`))
+    const htmlContent: string = fs
+      .readFileSync(`${FONT_DIR}/base.html`, 'utf8')
+      .replace('caveat-regular-webfont', `${FONT_DIR}/caveat-regular-webfont`)
+      .replace('Regular.woff', `${FONT_DIR}/Regular.woff`)
+
+    const $ = cheerio.load(htmlContent)
     const words: string[] = (
       await getWords(
         Theme.JSON,
         'https://apiv3.shanbay.com/weapps/dailyquote/quote/',
-        ['content', 'translation']
+        ['content', 'translation', 'origin_img_urls[1]']
       )
     ).split('\n')
     $('.year').text(week)
@@ -270,15 +275,27 @@ export async function generatePoster (savePath: string) {
     $('.month').text(`${date.slice(4, 6)}`)
     $('h2.title:nth-child(1)').text(words[0])
     $('h2.title:nth-child(2)').text(words[1])
+    $('.example-1 .wrapper').attr('style', `background : url(${words[2]}) 20% 1%/cover no-repeat;`)
 
+    fs.writeFileSync(`${FONT_DIR}/new.html`, $.html())
     const browser = await puppeteer.launch({
       args: ['--no-sandbox'],
-      defaultViewport: { height: 540, width: 462 },
+      defaultViewport: {
+        deviceScaleFactor: 5,
+        height: 540,
+        width: 414,
+      },
       headless: true,
     })
+
     const page = await browser.newPage()
-    await page.setContent($.html())
-    await page.screenshot({ path: savePath })
+    await page.goto(`file://${FONT_DIR}/new.html`)
+    const element = await page.$('.wrapper')
+    if (element) {
+      await element.screenshot({
+        path: savePath,
+      })
+    }
     await browser.close()
   }
 }
