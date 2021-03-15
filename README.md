@@ -1,8 +1,8 @@
-# Words per Day-wechaty 每日一句插件
+# Words-Per-Day Wechaty Plugin
 
 ![logo](docs/images/logo.png)
 
-## 1. 安装使用
+## 1. Basic Usage
 
 ```javascript
 const { Wechaty, log} = require("wechaty");
@@ -16,9 +16,9 @@ bot
 bot.start();
 ```
 
-## 2. 自定义数据来源
+## 2. Customized Data Sources
 
-可以自定义获取数据来源的函数，函数的类型如下：
+You can implement the following function to use self-defined source of the data
 
 ```javascript
 export interface getWordsFunc {
@@ -26,7 +26,7 @@ export interface getWordsFunc {
 }
 ```
 
-jsonpath的语法可参考：
+You can refer to the following links if you don't know JsonPath expressions：
 
 * <https://www.npmjs.com/package/JSONPath>
 * <https://jsonpath.com/>
@@ -41,37 +41,35 @@ async function getDailyEnglish(){
 }
 
 const config = {
-  rooms: ["打卡群"],// 作用每日一句的群名列表
-  sendTime: "13:02",// 自动发送每日一句的时间
-  trigger: "打卡",// 群内触发每日一句生成图片的关键词
-  imageDir: 'image',//本地保存图片文件的路径
-  imageStyle: 0, // 打卡图片的风格,只有0和1两种
-  name: '每日英语',// 每日一句数据源的名称
-  func: getDailyEnglish // 每日一句数据源的函数名
+  rooms: ["Group"],// the name of targeted group chat
+  sendTime: "13:02",// Time for automatic delivery of the daily meaasge
+  trigger: "Hello",// Trigger word for the delivery of the daily meaasge
+  imageDir: 'image',// Local directory to store images
+  imageStyle: 0, // Style of images to be sent, only support 0 and 1 for now
+  name: 'DailyEnglish',// the name of the bot
+  func: getDailyEnglish // the name of function which specify data sources
 };
 ```
 
-## 3.效果截图
+## 3.Screenshots
 
-### 1. 定时发送信息
+### 1. Scheduled Messages
 
 ![screenshot1](docs/images/screenshot1.png)
 
-### 2. 根据关键词回复打卡图片
+### 2. Reply Daily Images and Quotes
 
-打卡图片的生成
+#### 2.1 Style 1
 
-#### 2.1 风格1
-
-每次生成的打卡图片颜色不同
+For each message, the image color changes.
 ![screenshot2](docs/images/screenshot2.png)
 
-打卡图片的具体样式如下，显示打卡用户的头像和名字
+The specific style of the image is as follows, showing the user's avatar and name
 ![screenshot3](docs/images/screenshot3.png)
 
-#### 2.2  风格2
+#### 2.2  Style 2
 
 ![screenshot4](docs/images/screenshot4.png)
 
-打卡图片的具体样式如下
+The specific style of the image is as follows:
 ![screenshot5](docs/images/screenshot5.png)
